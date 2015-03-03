@@ -4,9 +4,7 @@ from Variable import where_is_the_variable
 
 
 f1 = File("uf20-01.cnf")
-print where_is_the_variable(f1.get_clause_info(), 2)
 
-
-print "fdsf"
+print(where_is_the_variable(f1.get_clause_info(), 4))
 
 

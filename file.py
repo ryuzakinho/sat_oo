@@ -1,7 +1,7 @@
 __author__ = 'ryuzakinho'
-from Clause import Clause
-from Variable import Variable
 import re
+import copy
+from Variable import Variable
 
 
 class File(object):
@@ -10,46 +10,15 @@ class File(object):
     opening_type : str
     filneame : str
     """
-    __opening_type = 'r'
+    opening_type = 'r'
 
     def __init__(self, filename):
         """
         :param filename: str
         """
-        self.__filename = filename
+        self.filename = filename
 
     @property
-    def opening_type(self):
-        """
-        I'm the opening type argument
-        :rtype : str
-        """
-        return self.__opening_type
-
-    @opening_type.setter
-    def opening_type(self, opening_type):
-        """
-        I'm setting the opening type
-        :param opening_type: str
-        """
-        self.__opening_type = opening_type
-
-    @property
-    def filename(self):
-        """
-        I'm the filename argument
-        :rtype: str
-        """
-        return self.__filename
-
-    @filename.setter
-    def filename(self, filename):
-        """
-        I'm setting the filename
-        :param filename: str
-        """
-        self.__filename = filename
-
     def get_file_info(self):
         """
         gets filename and opening types to gather information about cnf.
@@ -77,22 +46,19 @@ class File(object):
         :rtype : list
         """
         list_clause = list()
-        nbr_clause = (self.get_file_info())['nbr_clause']
-        for clause_number in range(1, nbr_clause + 1):
-            list_clause.append(Clause(clause_number))
+        buffer_clause = list()
         with open(self.filename, self.opening_type) as file_handler:
-            clause_counter = 0
+            clause_length = self.get_file_info['clause_length']
             for line in file_handler:
-                line.lstrip()   # We get rid of blanks at the beginning of the line
+                line.lstrip()  # We get rid of blanks at the beginning of the line
                 find = re.search("([-]?[0-9]+)\s*([-]?[0-9]+)\s*([-]?[0-9]+)\s*0", line)
                 if find is not None:
-                    clause_length = (self.get_file_info())['clause_length']
                     for i in range(1, clause_length + 1):
                         variable = find.group(i)
-                        print variable
                         if int(variable) > 0:
-                            (list_clause[clause_counter]).add_variable(Variable(int(variable)), 1)
+                            buffer_clause.append((Variable(int(variable)), 1))
                         else:
-                            list_clause[clause_counter].add_variable(Variable(-1 * int(variable)), -1)
-                    clause_counter += 1
+                            buffer_clause.append((Variable(int(variable)), -1))
+                    list_clause.append(copy.deepcopy(buffer_clause))
+                    del buffer_clause[:]
             return list_clause
