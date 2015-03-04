@@ -15,31 +15,31 @@ class Variable(object):
         :param variable_number: int
         """
         self.variable_number = variable_number
-        self.variable_value = -1
-        self.clauses_containing_the_variable = list()
+        self.variable_value = None
 
-def where_is_the_variable(clause_list, variable_number):
-    """
-    This is a static method that returns a list containing information about a variable position
-    in a clause list.
-    The returned list consists of a tuple in like this (clause index, variable index
-    in the clause variables list)
-    :param clause_list:
-    :param variable_number:
-    :return:
-    """
-    """
-    :param clause_list:
-    :param variable_number:
-    :return:
-    """
-    variable_position = list()
-    clause_list_index = 0
-    for clause in clause_list:
-        clause_variables_index = 0
-        for variable in clause:
-            if variable[0].variable_number == variable_number:
-                variable_position.append((clause_list_index, clause_variables_index))
-            clause_variables_index += 1
-        clause_list_index += 1
-    return variable_position
+    @staticmethod
+    def where_is_the_variable(clause_list, variable_number):
+        """
+        This is a static method that returns a list containing information about a variable position
+        in a clause list.
+        The returned list consists of a tuple in like this (clause index, variable index
+        in the clause variables list)
+        :param clause_list:
+        :param variable_number:
+        :return:
+        """
+        """
+        :param clause_list:
+        :param variable_number:
+        :return:
+        """
+        variable_position = list()
+        clause_list_index = 0
+        for clause in clause_list:
+            clause_variables_index = 0
+            for variable in clause:
+                if variable[0].variable_number == variable_number:
+                    variable_position.append((clause_list_index, clause_variables_index))
+                clause_variables_index += 1
+            clause_list_index += 1
+        return variable_position

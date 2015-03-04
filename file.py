@@ -42,7 +42,7 @@ class File(object):
     def get_clause_info(self):
         """
         This method opens a cnf file and gathers data about clauses (clause number, variables).
-        It returns a list of clauses.
+        It returns a list giving information about clauses.
         :rtype : list
         """
         list_clause = list()
