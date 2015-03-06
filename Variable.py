@@ -28,17 +28,12 @@ class Variable(object):
         :param variable_number:
         :return:
         """
-        """
-        :param clause_list:
-        :param variable_number:
-        :return:
-        """
         variable_position = list()
         clause_list_index = 0
         for clause in clause_list:
             clause_variables_index = 0
             for variable in clause:
-                if variable[0].variable_number == variable_number:
+                if (variable == variable_number) or ((-1 * variable) == variable_number):
                     variable_position.append((clause_list_index, clause_variables_index))
                 clause_variables_index += 1
             clause_list_index += 1

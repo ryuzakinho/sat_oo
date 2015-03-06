@@ -39,6 +39,7 @@ class File(object):
                     return {"nbr_clause": int(nbr_clause), "nbr_variable": int(nbr_variable),
                             "clause_length": int(clause_length)}
 
+    @property
     def get_clause_info(self):
         """
         This method opens a cnf file and gathers data about clauses (clause number, variables).
@@ -55,10 +56,7 @@ class File(object):
                 if find is not None:
                     for i in range(1, clause_length + 1):
                         variable = find.group(i)
-                        if int(variable) > 0:
-                            buffer_clause.append((Variable(int(variable)), 1))
-                        else:
-                            buffer_clause.append((Variable(int(variable)), -1))
+                        buffer_clause.append(int(variable))
                     list_clause.append(copy.deepcopy(buffer_clause))
                     del buffer_clause[:]
-            return list_clause
+        return list_clause
