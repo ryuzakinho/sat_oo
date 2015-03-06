@@ -8,10 +8,12 @@ import copy
 
 def create_child_state(var_num, already_assigned_variables, unsat_clause_list, truth_assignement):
     """
-
+    Generates the child states to be put in the queue.
     :rtype : State
     """
     var_position_child = Variable.where_is_the_variable(unsat_clause_list, var_num)
+    if len(var_position_child) == 0:
+        return None
     unsat_clause_list_child = copy.deepcopy(unsat_clause_list)
 
     if truth_assignement:
@@ -21,6 +23,8 @@ def create_child_state(var_num, already_assigned_variables, unsat_clause_list, t
                 unsat_clause_list_child.pop(position[0])
             else:
                 unsat_clause_list_child[position[0]].pop(position[1])
+                if len(unsat_clause_list_child[position[0]]) == 0:
+                    return None
 
             var_position_child = Variable.where_is_the_variable(unsat_clause_list_child, var_num)
     else:
@@ -30,6 +34,8 @@ def create_child_state(var_num, already_assigned_variables, unsat_clause_list, t
                 unsat_clause_list_child.pop(position[0])
             else:
                 unsat_clause_list_child[position[0]].pop(position[1])
+                if len(unsat_clause_list_child[position[0]]) == 0:
+                    return None
 
             var_position_child = Variable.where_is_the_variable(unsat_clause_list_child, var_num)
 
@@ -41,12 +47,14 @@ def create_child_state(var_num, already_assigned_variables, unsat_clause_list, t
 
 
 def breadth_search(clause_list_):
+    """
+    Performs breadth search on a cnf file in order to find a model that satisfies our clauses.
+    :rtype : State
+    """
     state_queue = Queue.Queue(0)
     state = State(clause_list_)
     state_queue.put(state)
-    var_num = 0
     # LOOP
-    unsat_clause_list = state.unsat_clause_list
     while True:
         if state_queue.empty():
             return None
@@ -61,12 +69,14 @@ def breadth_search(clause_list_):
                     var_num = 1
                 child1 = create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list, True)
                 child2 = create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list, False)
-                state_queue.put(child1)
-                state_queue.put(child2)
-                if len(child1.unsat_clause_list) == 0:
-                    return child1
-                elif len(child2.unsat_clause_list) == 0:
-                    return child2
+                if child1 is not None:
+                    state_queue.put(child1)
+                    if len(child1.unsat_clause_list) == 0:
+                        return child1
+                if child2 is not None:
+                    state_queue.put(child2)
+                    if len(child2.unsat_clause_list) == 0:
+                        return child2
 
 
 cnf_file = File("uf20-01.cnf")
