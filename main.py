@@ -46,7 +46,7 @@ def create_child_state(var_num, already_assigned_variables, unsat_clause_list, t
     return child
 
 
-def breadth_search(clause_list_):
+def breadth_search(clause_list_, nbr_variable):
     """
     Performs breadth search on a cnf file in order to find a model that satisfies our clauses.
     :rtype : State
@@ -65,23 +65,55 @@ def breadth_search(clause_list_):
             else:
                 if state.variable is not None:
                     var_num = state.variable.variable_number+1
+                    if var_num > nbr_variable:
+                        return None
                 else:
                     var_num = 1
                 child1 = create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list, True)
                 child2 = create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list, False)
                 if child1 is not None:
-                    state_queue.put(child1)
                     if len(child1.unsat_clause_list) == 0:
                         return child1
+                    state_queue.put(child1)
                 if child2 is not None:
-                    state_queue.put(child2)
                     if len(child2.unsat_clause_list) == 0:
                         return child2
+                    state_queue.put(child2)
+
+def depth_search(clause_list_, nbr_variable):
+    state_queue = Queue.LifoQueue(0)
+    state = State(clause_list_)
+    state_queue.put(state)
+    # LOOP
+    while True:
+        if state_queue.empty():
+            return None
+        else:
+            state = state_queue.get()
+            if len(state.unsat_clause_list) == 0:
+                return state
+            else:
+                if state.variable is not None:
+                    var_num = state.variable.variable_number+1
+                    if var_num > nbr_variable:
+                        return None
+                else:
+                    var_num = 1
+                child1 = create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list, True)
+                child2 = create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list, False)
+                if child1 is not None:
+                    if len(child1.unsat_clause_list) == 0:
+                        return child1
+                    state_queue.put(child1)
+                if child2 is not None:
+                    if len(child2.unsat_clause_list) == 0:
+                        return child2
+                    state_queue.put(child2)
 
 
 cnf_file = File("uf20-01.cnf")
 clause_list = cnf_file.get_clause_info
 print clause_list
 print Variable.where_is_the_variable(clause_list, 1)
-etat = breadth_search(clause_list)
+etat = depth_search(clause_list, cnf_file.get_file_info['nbr_variable'])
 print etat.already_assigned_variables
