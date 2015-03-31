@@ -153,4 +153,5 @@ def first_heuristic_search(clause_list_, nbr_variable):
 
             # close_list.append(state)
 
-
+def second_heuristic_search():
+    print ""
