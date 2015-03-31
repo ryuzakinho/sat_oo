@@ -35,8 +35,8 @@ class State(object):
         :rtype : State
         """
         var_position_child = Variable.where_is_the_variable(unsat_clause_list, var_num)
-        if len(var_position_child) == 0:
-            return None
+        #if len(var_position_child) == 0:
+         #   return None
         unsat_clause_list_child = copy.deepcopy(unsat_clause_list)
 
         if truth_assignement:
@@ -87,8 +87,8 @@ class StateHeuristic(State):
         :rtype : StateHeuristic
         """
         var_position_child = Variable.where_is_the_variable(unsat_clause_list, var_num)
-        if len(var_position_child) == 0:
-            return None
+       # if len(var_position_child) == 0:
+        #    return None
         unsat_clause_list_child = copy.deepcopy(unsat_clause_list)
 
         if truth_assignement:
