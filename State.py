@@ -200,3 +200,71 @@ class StateHeuristic(State):
         child.h = h
 
         return child
+
+
+    @staticmethod
+    def create_child_state_heuristic_sum_two(var_num, already_assigned_variables, unsat_clause_list,
+                                                            clause_list_length, truth_assignement):
+        """
+
+        :param var_num:
+        :param already_assigned_variables:
+        :param unsat_clause_list:
+        :param clause_list_length:
+        :param truth_assignement:
+        :return:
+        """
+        unsat_clause_list_child = copy.deepcopy(unsat_clause_list)
+
+        already_assigned_variables_child = copy.deepcopy(already_assigned_variables)
+        already_assigned_variables_child.append((var_num, truth_assignement))
+
+        nbr_positive_occurrences = Variable.get_number_positive_occurrences(unsat_clause_list_child, var_num)
+        nbr_negative_occurrences = Variable.get_number_positive_occurrences(unsat_clause_list_child, var_num)
+
+        g = len(already_assigned_variables_child)
+        if (nbr_positive_occurrences >= nbr_negative_occurrences) and truth_assignement:
+            h = clause_list_length - nbr_positive_occurrences - 1
+        elif (nbr_positive_occurrences >= nbr_negative_occurrences) and not truth_assignement:
+            h = clause_list_length - nbr_positive_occurrences
+        elif (nbr_positive_occurrences < nbr_negative_occurrences) and truth_assignement:
+            h = clause_list_length - nbr_negative_occurrences
+        elif (nbr_positive_occurrences < nbr_negative_occurrences) and not truth_assignement:
+            h = clause_list_length - nbr_negative_occurrences - 1
+
+        var_position_child = Variable.where_is_the_variable(unsat_clause_list, var_num)
+        if truth_assignement:
+            while len(var_position_child) > 0:
+                position = var_position_child[0]
+                if unsat_clause_list_child[position[0]][position[1]] > 0:
+                    unsat_clause_list_child.pop(position[0])
+                else:
+                    unsat_clause_list_child[position[0]].pop(position[1])
+                    if len(unsat_clause_list_child[position[0]]) == 0:
+                        return None
+
+                var_position_child = Variable.where_is_the_variable(unsat_clause_list_child, var_num)
+        else:
+            while len(var_position_child) > 0:
+                position = var_position_child[0]
+                if unsat_clause_list_child[position[0]][position[1]] < 0:
+                    unsat_clause_list_child.pop(position[0])
+                else:
+                    unsat_clause_list_child[position[0]].pop(position[1])
+                    if len(unsat_clause_list_child[position[0]]) == 0:
+                        return None
+
+                var_position_child = Variable.where_is_the_variable(unsat_clause_list_child, var_num)
+
+        for i in range(0, len(unsat_clause_list_child)):
+            if len(unsat_clause_list_child[i]) == 1:
+                for j in range(i + 1, len(unsat_clause_list_child)):
+                    if (len(unsat_clause_list_child[j]) == 1) and (
+                                unsat_clause_list_child[j][0] == -1 * unsat_clause_list_child[i][0]):
+                        return None
+
+        child = StateHeuristic(var_num, truth_assignement, already_assigned_variables_child, unsat_clause_list_child)
+        child.g = g
+        child.h = h + len(unsat_clause_list_child)
+
+        return child

@@ -164,6 +164,14 @@ def a_star(clause_list_, nbr_variable, heuristic):
             child2 = StateHeuristic.create_child_state_heuristic_max_occuring_vars(len(state.already_assigned_variables)+1,
                                                              state.already_assigned_variables, state.unsat_clause_list, len(clause_list_),
                                                              False)
+        elif heuristic == 3:
+            child1 = StateHeuristic.create_child_state_heuristic_sum_two(len(state.already_assigned_variables)+1,
+                                                                 state.already_assigned_variables, state.unsat_clause_list, len(clause_list_),
+                                                                 True)
+            child2 = StateHeuristic.create_child_state_heuristic_sum_two(len(state.already_assigned_variables)+1,
+                                                             state.already_assigned_variables, state.unsat_clause_list, len(clause_list_),
+                                                             False)
+
         if child1 is not None:
             open_list.append(child1)
 

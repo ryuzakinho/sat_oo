@@ -5,7 +5,7 @@ __author__ = 'ryuzakinho'
 from File import File
 
 
-cnf_file = File("uf20-01.cnf")
+cnf_file = File("uf20-06.cnf")
 clause_list = cnf_file.get_clause_info
 print cnf_file.get_file_info
 print clause_list
@@ -20,4 +20,7 @@ etat = a_star(clause_list, cnf_file.get_file_info['nbr_variable'], 1)
 print etat.already_assigned_variables
 
 etat = a_star(clause_list, cnf_file.get_file_info['nbr_variable'], 2)
+print etat.already_assigned_variables
+
+etat = a_star(clause_list, cnf_file.get_file_info['nbr_variable'], 3)
 print etat.already_assigned_variables
