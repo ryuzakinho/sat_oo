@@ -16,14 +16,19 @@ def breadth_search(clause_list_, nbr_variable):
     state_queue = Queue.Queue(0)
     state = State(clause_list_)
     state_queue.put(state)
+    nbr_states = 1
+    nbr_bad_states = 0
+    max_size_queue = 1
     # LOOP
     while True:
         if state_queue.empty():
             return None
         else:
+            if state_queue.qsize() > max_size_queue:
+                max_size_queue = state_queue.qsize()
             state = state_queue.get()
             if len(state.unsat_clause_list) == 0:
-                return state
+                return state, nbr_states, nbr_bad_states, max_size_queue
             else:
                 if state.variable is not None:
                     var_num = state.variable.variable_number + 1
@@ -40,33 +45,43 @@ def breadth_search(clause_list_, nbr_variable):
                 child2 = State.create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list,
                                                   False)
                 if child1 is not None:
+                    nbr_states += 1
                     if len(child1.unsat_clause_list) == 0:
-                        return child1
+                        return child1, nbr_states, nbr_bad_states, max_size_queue
                     state_queue.put(child1)
+                else:
+                    nbr_bad_states += 1
                 if child2 is not None:
+                    nbr_states += 1
                     if len(child2.unsat_clause_list) == 0:
-                        return child2
+                        return child2, nbr_states, nbr_bad_states, max_size_queue
                     state_queue.put(child2)
-
+                else:
+                    nbr_bad_states += 1
 
 def depth_search(clause_list_, nbr_variable):
     """
     This function looks for a solution that satisfies our clauses using depth first strategy.
     :param clause_list_:
     :param nbr_variable:
-    :return:
+    :return: tuple
     """
     state_queue = Queue.LifoQueue(0)
     state = State(clause_list_)
     state_queue.put(state)
+    nbr_states = 1
+    nbr_bad_states = 0
+    max_size_queue = 0
     # LOOP
     while True:
         if state_queue.empty():
             return None
         else:
+            if state_queue.qsize() > max_size_queue:
+                max_size_queue = state_queue.qsize()
             state = state_queue.get()
             if len(state.unsat_clause_list) == 0:
-                return state
+                return state, nbr_states, nbr_bad_states, max_size_queue
             else:
                 if state.variable is not None:
                     var_num = state.variable.variable_number + 1
@@ -83,13 +98,19 @@ def depth_search(clause_list_, nbr_variable):
                 child2 = State.create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list,
                                                   False)
                 if child2 is not None:
+                    nbr_states += 1
                     if len(child2.unsat_clause_list) == 0:
-                        return child2
+                        return child2, nbr_states, nbr_bad_states, max_size_queue
                     state_queue.put(child2)
+                else:
+                    nbr_bad_states += 1
                 if child1 is not None:
+                    nbr_states += 1
                     if len(child1.unsat_clause_list) == 0:
-                        return child1
+                        return child1, nbr_states, nbr_bad_states, max_size_queue
                     state_queue.put(child1)
+                else:
+                    nbr_bad_states += 1
 
 
 def find_smallest_f(open_list):
@@ -134,19 +155,24 @@ def a_star(clause_list_, nbr_variable, heuristic):
     :param clause_list_:
     :param nbr_variable : Integer
     :param heuristic : Integer
-    :return: StateHeuristic
+    :return: tuple
     """
     open_list = list()
     # close_list = list()
     state = StateHeuristic(clause_list_)
     state.g = state.h = 0
     open_list.append(state)
+    nbr_states = 1
+    nbr_bad_states = 0
+    max_size_list = 1
 
     while len(open_list) > 0:
+        if len(open_list) > max_size_list:
+            max_size_list = len(open_list)
         open_state = find_smallest_f(open_list)
         state = open_list.pop(open_list.index(open_state))
         if len(state.unsat_clause_list) == 0:
-            return state
+            return state, nbr_states, nbr_bad_states, max_size_list
 
         if len(state.already_assigned_variables) > nbr_variable:
             return None
@@ -173,9 +199,15 @@ def a_star(clause_list_, nbr_variable, heuristic):
                                                              False)
 
         if child1 is not None:
+            nbr_states += 1
             open_list.append(child1)
+        else:
+            nbr_bad_states += 1
 
         if child2 is not None:
+            nbr_states += 1
             open_list.append(child2)
+        else:
+            nbr_bad_states += 1
 
             # close_list.append(state)
