@@ -38,3 +38,29 @@ class Variable(object):
                 clause_variables_index += 1
             clause_list_index += 1
         return variable_position
+
+    @staticmethod
+    def get_number_positive_occurrences(clause_list, var_num):
+        """
+        Returns the number of positive occurrences of a variable in a list of clause
+        :param clause_list:
+        :param var_num:
+        :return:
+        """
+        nbr_positive_occurrences = 0
+        for clause in clause_list:
+            for variable in clause:
+                if variable == var_num:
+                    nbr_positive_occurrences += 1
+
+        return nbr_positive_occurrences
+
+    @staticmethod
+    def get_number_negative_occurrences(clause_list, var_num):
+        nbr_negative_occurrences = 0
+        for clause in clause_list:
+            for variable in clause:
+                if variable == (-1 * var_num):
+                    nbr_negative_occurrences += 1
+
+        return nbr_negative_occurrences

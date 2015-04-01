@@ -2,6 +2,7 @@ import Queue
 
 from State import State
 from State import StateHeuristic
+from Variable import Variable
 
 
 __author__ = 'ryuzakinho'
@@ -30,6 +31,10 @@ def breadth_search(clause_list_, nbr_variable):
                         return None
                 else:
                     var_num = 1
+
+                while len(Variable.where_is_the_variable(clause_list_, var_num)) == 0:
+                    var_num += 1
+
                 child1 = State.create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list,
                                                   True)
                 child2 = State.create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list,
@@ -69,6 +74,10 @@ def depth_search(clause_list_, nbr_variable):
                         return None
                 else:
                     var_num = 1
+
+                while len(Variable.where_is_the_variable(clause_list_, var_num)) == 0:
+                    var_num += 1
+
                 child1 = State.create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list,
                                                   True)
                 child2 = State.create_child_state(var_num, state.already_assigned_variables, state.unsat_clause_list,
@@ -119,11 +128,12 @@ def already_assigned_in_parent(var_number, open_state):
     return False
 
 
-def first_heuristic_search(clause_list_, nbr_variable):
+def a_star(clause_list_, nbr_variable, heuristic):
     """
     Uses the heuristic that calculates the smallest number of non satisfied clauses in state.
     :param clause_list_:
     :param nbr_variable : Integer
+    :param heuristic : Integer
     :return: StateHeuristic
     """
     open_list = list()
@@ -137,21 +147,27 @@ def first_heuristic_search(clause_list_, nbr_variable):
         state = open_list.pop(open_list.index(open_state))
         if len(state.unsat_clause_list) == 0:
             return state
-        nbr = len(state.already_assigned_variables)
-        if nbr > nbr_variable:
+
+        if len(state.already_assigned_variables) > nbr_variable:
             return None
-        child1 = StateHeuristic.create_child_state_heuristic(len(state.already_assigned_variables)+1,
-                                                             state.already_assigned_variables, state.unsat_clause_list,
-                                                             True)
-        if child1 is not None:
-            open_list.append(child1)
-        child2 = StateHeuristic.create_child_state_heuristic(len(state.already_assigned_variables)+1,
+        if heuristic == 1:
+            child1 = StateHeuristic.create_child_state_heuristic_min_unsat_clauses(len(state.already_assigned_variables)+1,
+                                                                 state.already_assigned_variables, state.unsat_clause_list,
+                                                                 True)
+            child2 = StateHeuristic.create_child_state_heuristic_min_unsat_clauses(len(state.already_assigned_variables)+1,
                                                              state.already_assigned_variables, state.unsat_clause_list,
                                                              False)
+        elif heuristic == 2:
+            child1 = StateHeuristic.create_child_state_heuristic_max_occuring_vars(len(state.already_assigned_variables)+1,
+                                                                 state.already_assigned_variables, state.unsat_clause_list, len(clause_list_),
+                                                                 True)
+            child2 = StateHeuristic.create_child_state_heuristic_max_occuring_vars(len(state.already_assigned_variables)+1,
+                                                             state.already_assigned_variables, state.unsat_clause_list, len(clause_list_),
+                                                             False)
+        if child1 is not None:
+            open_list.append(child1)
+
         if child2 is not None:
             open_list.append(child2)
 
             # close_list.append(state)
-
-def second_heuristic_search():
-    print ""
